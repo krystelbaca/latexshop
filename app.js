@@ -23,11 +23,17 @@ app.use(session({
   resave:false,
   saveUninitializer:false
 }));
-
+var as ={};
 mongoose.connect('mongodb://ponchito:1995@ds023042.mlab.com:23042/latexshop');
 
 app.get('/', function(req, res){
-	res.render('index', {usuario:"5736e11b3f99d590093ddbea"});
+	if(as.user){
+		req.session = as;
+		res.render('index', {usuario:req.session.user._id});
+	} else {
+		res.render('index', {usuario:""});
+	}
+
 });
 
 app.get("/find/cart/:idUsuario", function (req, response) {
@@ -35,6 +41,40 @@ app.get("/find/cart/:idUsuario", function (req, response) {
         .exec(function (err, obj) {
             response.json(obj);
         });
+});
+
+app.get("/find/productos/playeras", function (req, response) {
+    Producto.find({categoria:"playeras"})
+        .exec(function (err, obj) {
+            response.json(obj);
+        });
+});
+
+app.get("/find/productos/gorras", function (req, response) {
+    Producto.find({categoria:"gorra"})
+        .exec(function (err, obj) {
+            response.json(obj);
+        });
+});
+
+app.get("/find/productos/cases", function (req, response) {
+    Producto.find({categoria:"case"})
+        .exec(function (err, obj) {
+            response.json(obj);
+        });
+});
+
+app.post("/iniciarSesion", function(req, response){
+	Usuario.findOne({"email": req.body.email, "password":req.body.password})
+		.exec(function(err, obj){
+			if(err){
+				response.redirect("/");
+			} else {
+				req.session.user = obj;
+				as=req.session;
+				response.redirect("/");
+			}
+		});
 });
 
 app.listen(port, function(){
