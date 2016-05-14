@@ -25,14 +25,15 @@ app.use(session({
 }));
 
 mongoose.connect('mongodb://ponchito:1995@ds023042.mlab.com:23042/latexshop');
+
 app.get('/', function(req, res){
-	res.render('index');
+	res.render('index', {usuario:"5736e11b3f99d590093ddbea"});
 });
 
-app.get("/show/cart", function (req, response) {
-    ShippingCar.findById({"usuario": mongoose.Types.ObjectId(req.session.usuario._id)})
+app.get("/find/cart/:idUsuario", function (req, response) {
+    ShippingCar.findOne({"usuario": mongoose.Types.ObjectId(req.params.idUsuario)})
         .exec(function (err, obj) {
-            response.render("/shippingCar?",{carrito: obj});
+            response.json(obj);
         });
 });
 
