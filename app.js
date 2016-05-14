@@ -17,6 +17,7 @@ app.use(bodyParser.urlencoded({extended:false}));
 
 app.set('view options', {layout:false});
 app.use('/public', express.static(__dirname + '/public'));
+app.use('/views', express.static(__dirname + '/views'));
 app.use(session({
   secret:"455e96f6c76b60d39f549f2f7a1830f1",
   resave:false,

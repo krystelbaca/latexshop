@@ -5,7 +5,7 @@ tienda.config(function($routeProvider) {
   $routeProvider
           .when('/',
                     {
-                      templateUrl: 'views/home.html'
+                      templateUrl: '/views/home.ejs'
                       ,controller: 'home'
                     }
               )
@@ -123,29 +123,15 @@ tienda.factory("global",
 
       if(obj.productos.length > 0)
         $rootScope.$broadcast("getCamisetas");
-      else
-        $http.get("db/playeras.php").success(
-          function(data)
-          {
-            obj.camisetas = data;
-            $rootScope.$broadcast("getCamisetas");
-          }
-        );
-    }
+
+           }
 
     obj.getProductos = function()
     {
 
       if(obj.productos.length > 0)
         $rootScope.$broadcast("getProductos");
-      else
-        $http.get("db/productos").success(
-          function(data)
-          {
-            obj.productos = data;
-            $rootScope.$broadcast("getProductos");
-          }
-        );
+
     }
 
     obj.getProducto = function(id)
