@@ -1,0 +1,29 @@
+[
+	{
+	    "producto": {
+	                  "id": "1",
+	                  "nombre": "Buffanda Geek",
+	                  "precio": "200",
+	                  "img": "https://s-media-cache-ak0.pinimg.com/564x/6e/36/fa/6e36facc67ea5c9c7c1bbd4c273de3c4.jpg"
+	                },
+	    "canti":3
+	},
+	{
+	    "producto": {
+	                  "id": "2",
+	                  "nombre": "Buffanda Geek 2",
+	                  "precio": "200",
+	                  "img": "https://s-media-cache-ak0.pinimg.com/564x/6e/36/fa/6e36facc67ea5c9c7c1bbd4c273de3c4.jpg"
+	                },
+	    "canti":2
+	},
+	{
+	    "producto": {
+						"id": "3",
+						"nombre": "Gorro Geek XYZ",
+						"precio": "100",
+						"img": "http://www.elmonogeek.com/wp-content/uploads/2013/03/goomba2.jpg"
+					},
+	    "canti":4
+	}
+]
