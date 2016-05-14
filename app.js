@@ -14,9 +14,9 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.set('view options', {layout:false});
 app.use(express.static(__dirname + '/views'));
 app.use(session({
-  secret:"455e96f6c76b60d39f549f2f7a1830f1", //Es un hash que identifica  nuestra aplicacion de otras aplicaciones express
-  resave:false,//Cada vez que se aga un request se tiene que guardar o rehacer la sesión
-  saveUninitializer:false // Sirve para reinicializar la sesión cada vez que se hace un request
+  secret:"455e96f6c76b60d39f549f2f7a1830f1",
+  resave:false,
+  saveUninitializer:false
 }));
 
 mongoose.connect('mongodb://ponchito:1995@ds023042.mlab.com:23042/latexshop');
