@@ -3,24 +3,24 @@ var tienda = angular.module('tienda', []);
 
 tienda.config(function($routeProvider) {
   $routeProvider
-          .when('/', 
+          .when('/',
                     {
                       templateUrl: 'views/home.html'
-                      ,controller: 'home'                      
+                      ,controller: 'home'
                     }
               )
-          .when('/detalle/:id', 
+          .when('/detalle/:id',
                     {
                       controller:  'detalle',
                       templateUrl: 'views/detalle.html'
                     })
 
-          .when('/car', 
+          .when('/car',
                     {
                       controller:  'car',
                       templateUrl: 'views/car.html'
                     })
-          
+
           .otherwise({ redirectTo: '/' });
 });
 
@@ -32,7 +32,7 @@ var Entrada = function()
           {
             this.producto = {};
             this.canti = 0;
-          }  
+          }
 
           Entrada.prototype.getImporte = function() {
             return this.canti * this.producto.precio;
@@ -44,9 +44,9 @@ var Entrada = function()
 
           Entrada.prototype.decreCanti = function() {
             if(this.canti>=2){
-              return this.canti--;  
+              return this.canti--;
             }
-            
+
           }
 
           Entrada.prototype.setCanti = function(n) {
@@ -54,9 +54,9 @@ var Entrada = function()
               alert("Ingresa una cantidad valida.");
               this.canti=1;
             }else{
-              return this.canti = n;  
+              return this.canti = n;
             }
-            
+
           }
 
 
@@ -71,7 +71,7 @@ tienda.factory("global",
     // in not session
     obj.productos = [];
     obj.camisetas = [];
-    
+
 
     // in session
     obj.entradas = [];
@@ -82,18 +82,18 @@ tienda.factory("global",
 
         var tmp = new Entrada();
         angular.copy(e, tmp);
-        
+
         $http.get("db/entradas").success(
           function(data)
-          { 
+          {
             if(true)
             {
-              obj.entradas.push(tmp); 
+              obj.entradas.push(tmp);
               $rootScope.$broadcast("addToCar");
             }
-            
+
           }
-        );           
+        );
     }
 
     obj.delToCar = function(nom)
@@ -105,17 +105,17 @@ tienda.factory("global",
 
             $http.get("db/entradas").success(
               function(data)
-              { 
+              {
                 if(true)
-                obj.car.splice(1, i); 
+                obj.car.splice(1, i);
                 $rootScope.$broadcast("addToCar");
               }
-            ); 
+            );
 
             break;
           }
         };
-                  
+
     }
 
     obj.getCamisetas = function()
@@ -151,14 +151,14 @@ tienda.factory("global",
     obj.getProducto = function(id)
     {
       for (var i = 0; i < obj.productos.length; i++) {
-        if(obj.productos[i].id == id)        
+        if(obj.productos[i].id == id)
           return obj.productos[i];
       };
     }
 
     obj.getEntradas = function()
     {
-      
+
       if(obj.productos.length > 0)
         $rootScope.$broadcast("getEntradas");
       else
@@ -170,7 +170,7 @@ tienda.factory("global",
               angular.copy(data[i], tmp);
               obj.entradas.push(tmp);
             };
-            
+
             $rootScope.$broadcast("getEntradas");
           }
         );
@@ -187,18 +187,58 @@ obj.postEntradas = function()
   }
 );
 
-function main($scope, global)
+function main($scope, global, $http)
 {
   console.log("main");
 
   $scope.entradas = global.entradas;
+  $scope.cartProducts =[];
+  $scope.idUsuario;
+  $scope.totalCarro = 0.0;
 
-  $scope.$on("addToCar", 
+  $scope.init = function(idUsuario){
+    $scope.idUsuario = idUsuario;
+    $scope.getProductosCarritos();
+  };
+
+  $scope.$on("addToCar",
     function()
     {
       $scope.car = global.entradas;
     }
-  );	
+  );
+
+  $scope.getProductosCarritos = function(){
+    $http.get('/find/cart/'+$scope.idUsuario).success(function(data) {
+          var newProducts = [];
+          data.productos.forEach(function(productoFormal) {
+              var filteredProduct = {};
+              filteredProduct.productName = productoFormal.productName;
+              filteredProduct.price = productoFormal.productPrice;
+              filteredProduct.cantidad = 0;
+              filteredProduct.talla = productoFormal.talla;
+              data.productos.forEach(function(productArray){
+                if((productoFormal.productName === productArray.productName) && (productoFormal.talla === productArray.talla)){
+                  filteredProduct.cantidad +=1;
+                }
+              });
+              filteredProduct.total = filteredProduct.cantidad * filteredProduct.price;
+              if(newProducts.length <=0){
+                newProducts.push(filteredProduct);
+              } else {
+                if(
+                  newProducts.filter(function(product){return (product.productName === filteredProduct.productName) && (product.talla === filteredProduct.talla)
+                }).length <=0){
+                  newProducts.push(filteredProduct);
+                };
+              }
+              $scope.totalCarro +=productoFormal.productPrice;
+          });
+          $scope.cartProducts = newProducts;
+      }).error(function(data){
+        //TODO:Error
+        });
+  }
 }
 
 
@@ -209,15 +249,15 @@ function car($scope, global)
   $scope.lista = global.getEntradas();
 
 
-  $scope.$on("getEntradas", 
+  $scope.$on("getEntradas",
     function()
     {
       $scope.lista = global.entradas;
     }
   );
-  
+
   $scope.addToCar = function(e){
-        
+
     global.addToCar(e);
   }
 }
@@ -226,7 +266,7 @@ function car($scope, global)
 function detalle ($scope, $routeParams, $location, global)
 {
   $scope.id = $routeParams.id;
-  $scope.prod = global.getProducto($scope.id);  
+  $scope.prod = global.getProducto($scope.id);
 
   if( !$scope.prod )
     $location.path('/');
@@ -243,17 +283,17 @@ function detalle ($scope, $routeParams, $location, global)
 function home($scope, $http, global)
 {
   console.log("home");
-	
-  $scope.$on("getProductos", 
+
+  $scope.$on("getProductos",
     function()
     {
       $scope.productos = global.productos;
-      
+
     }
   );
 
 
-  $scope.$on("getCamisetas", 
+  $scope.$on("getCamisetas",
     function()
     {
       $scope.camisetas = global.camisetas;
@@ -274,4 +314,3 @@ tienda.controller("main", main);
 tienda.controller("car", car);
 tienda.controller("home", home);
 tienda.controller("detalle", detalle);
-
