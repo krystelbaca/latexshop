@@ -70,6 +70,7 @@ tienda.factory("global",
 
     // in not session
     obj.productos = [];
+    obj.productosTienda = [];
     obj.camisetas = [];
     obj.gorras=[];
     obj.cases=[];
@@ -122,7 +123,6 @@ tienda.factory("global",
 
     obj.getCamisetas = function()
     {
-      console.log("algo");
       $http.get('/find/productos/playeras').success(function(data) {
             return data;
         }).error(function(data){
@@ -132,9 +132,19 @@ tienda.factory("global",
 
     }
 
+    obj.getProductosTienda = function()
+    {
+      $http.get('/find/productos').success(function(data) {
+            return data;
+        }).error(function(data){
+          //TODO:Error
+          });
+        $rootScope.$broadcast("getProductosTienda");
+
+    }
+
     obj.getGorras = function()
     {
-      console.log("algo");
       $http.get('/find/productos/gorras').success(function(data) {
             return data;
         }).error(function(data){
@@ -146,7 +156,6 @@ tienda.factory("global",
 
     obj.getCases = function()
     {
-      console.log("algo");
       $http.get('/find/productos/cases').success(function(data) {
             return data;
         }).error(function(data){
@@ -229,6 +238,7 @@ function main($scope, global, $http)
     if($scope.idUsuario!=="")
       $http.get('/find/cart/'+$scope.idUsuario).success(function(data) {
             var newProducts = [];
+            $scope.totalCarro = 0.0;
             if(data!=[]){
             data.productos.forEach(function(productoFormal) {
                 var filteredProduct = {};
@@ -236,6 +246,8 @@ function main($scope, global, $http)
                 filteredProduct.price = productoFormal.productPrice;
                 filteredProduct.cantidad = 0;
                 filteredProduct.talla = productoFormal.talla;
+                filteredProduct.idProducto = productoFormal._id;
+                console.log("idProducto ->" + filteredProduct.idProducto);
                 data.productos.forEach(function(productArray){
                   if((productoFormal.productName === productArray.productName) && (productoFormal.talla === productArray.talla)){
                     filteredProduct.cantidad +=1;
@@ -263,12 +275,42 @@ function main($scope, global, $http)
   $scope.getProductosTienda = function(){
       $http.get('/find/productos/playeras').success(function(data) {
             $scope.productos = data;
-            console.log(data);
         }).error(function(data){
           //TODO:Error
           });
   }
 
+  $scope.agregarObjeto = function(id){
+    $http({
+      url:'/agregarObjeto',
+      method:'POST',
+      data: {idUsuario: $scope.idUsuario,
+      idProducto:id}
+    }).then(function(data){
+      $scope.getProductosCarritos();
+    }, function(data){
+      //TODO:Error
+    });
+
+  }
+
+  $scope.removerObjeto = function(id){
+    console.log("algo")
+    console.log($scope.idUsuario);
+    $http({
+      url:'/removerObjeto',
+      method:'POST',
+      data: {idUsuario: $scope.idUsuario,
+      idProducto:id}
+    }).then(function(data){
+      console.log("Finalize este pedo")
+      $scope.getProductosCarritos();
+      console.log("AAAAAAQQQQ");
+    }, function(data){
+      //TODO:Error
+    });
+
+  }
 
 
 }
@@ -328,10 +370,8 @@ function home($scope, $http, global)
   $scope.$on("getCamisetas",
     function()
     {
-      console.log("Algo");
       $http.get('/find/productos/playeras').success(function(data) {
             $scope.camisetas = data;
-            console.log(data);
         }).error(function(data){
           //TODO:Error
           });
@@ -341,7 +381,6 @@ function home($scope, $http, global)
   $scope.$on("getGorras",
     function()
     {
-      console.log("Algo");
       $http.get('/find/productos/gorras').success(function(data) {
             $scope.gorras = data;
         }).error(function(data){
@@ -353,24 +392,33 @@ function home($scope, $http, global)
   $scope.$on("getCases",
     function()
     {
-      console.log("Algo");
       $http.get('/find/productos/cases').success(function(data) {
             $scope.cases = data;
-            console.log(data);
         }).error(function(data){
           //TODO:Error
           });
     }
   );
 
+  $scope.$on("getProductosTienda",function()
+  {
+    $http.get('/find/productos').success(function(data) {
+          $scope.productosTienda = data;
+      }).error(function(data){
+        //TODO:Error
+        });
+  }
+  );
   $scope.gorras = [];
   $scope.camisetas = [];
   $scope.cases=[];
+  $scope.productosTienda=[];
 
 
   global.getGorras();
   global.getCases();
   global.getCamisetas();
+  global.getProductosTienda();
 
 
 }

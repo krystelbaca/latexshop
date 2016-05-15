@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>Home | E-Shopper</title>
+    <title>Home | LATEXSHOP</title>
     <link href="public/css/bootstrap.min.css" rel="stylesheet">
     <link href="public/css/font-awesome.min.css" rel="stylesheet">
     <link href="public/css/prettyPhoto.css" rel="stylesheet">
@@ -59,41 +59,11 @@
 		<div class="header-middle"><!--header-middle-->
 			<div class="container">
 				<div class="row">
-					<div class="col-sm-4">
-						<div class="logo pull-left">
-							<a href="index.html"><img src="public/images/home/logo.png" alt="" /></a>
-						</div>
-						<div class="btn-group pull-right">
-							<div class="btn-group">
-								<button type="button" class="btn btn-default dropdown-toggle usa" data-toggle="dropdown">
-									List
-									<span class="caret"></span>
-								</button>
-								<ul class="dropdown-menu">
-									<li ng-repeat="e in car">
-										<a href="#/detalle/{e.id}">
-											{{e.nombre}} {{e.precio}}
+					<div class="col-sm-8">
 
-										</a>
-									</li>
+							<a href="index.html"><img height="100" width="200"  src="public/images/Capture.JPG" alt="" /></a>
 
 
-									<!--<li><a href="#">2 Gorro Geek $80 $160</a></li>-->
-								</ul>
-							</div>
-
-							<!--
-							<div class="btn-group">
-								<button type="button" class="btn btn-default dropdown-toggle usa" data-toggle="dropdown">
-									DOLLAR
-									<span class="caret"></span>
-								</button>
-								<ul class="dropdown-menu">
-									<li><a href="#">Canadian Dollar</a></li>
-									<li><a href="#">Pound</a></li>
-								</ul>
-							</div>
-							-->
 						</div>
 					</div>
 					<div class="col-sm-8">
@@ -126,23 +96,6 @@
 						<div class="mainmenu pull-left">
 							<ul class="nav navbar-nav collapse navbar-collapse">
 								<li><a href="index.html" class="active">Home</a></li>
-								<li class="dropdown"><a href="#">Shop<i class="fa fa-angle-down"></i></a>
-                                    <ul role="menu" class="sub-menu">
-                                        <li><a href="shop.html">Products</a></li>
-										<li><a href="product-details.html">Product Details</a></li>
-										<li><a href="checkout.html">Checkout</a></li>
-										<li><a type="button" data-toggle="modal" data-target="#carritoModal">Cart</a></li>
-										<li><a type="button" data-toggle="modal" data-target="#loginModal">Login</a></li>
-                                    </ul>
-                                </li>
-								<li class="dropdown"><a href="#">Blog<i class="fa fa-angle-down"></i></a>
-                                    <ul role="menu" class="sub-menu">
-                                        <li><a href="blog.html">Blog List</a></li>
-										<li><a href="blog-single.html">Blog Single</a></li>
-                                    </ul>
-                                </li>
-								<li><a href="404.html">404</a></li>
-								<li><a href="contact-us.html">Contact</a></li>
 							</ul>
 						</div>
 					</div>
@@ -340,6 +293,7 @@
                 <th style="text-align:center;">Talla</th>
                 <th style="text-align:center;">Cantidad</th>
                 <th style="text-align:center;">Total</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -349,6 +303,7 @@
                 <td style="text-align:center;">{{producto.talla}}</td>
                 <td style="text-align:center;">{{producto.cantidad}}</td>
                 <td style="text-align:center;">{{producto.total}}</td>
+                <td style="text-align:center;"><a ng-click="removerObjeto(producto.idProducto)" class="btn btn-default"><i class="fa fa-shopping-cart"></i>Eliminar</a></td>
               </tr>
               <tr>
                 <td></td>
