@@ -50,7 +50,7 @@ var Entrada = function()
           }
 
           Entrada.prototype.setCanti = function(n) {
-            if(this.canti<=0){
+            if(this.cantia<=0){
               alert("Ingresa una cantidad valida.");
               this.canti=1;
             }else{
@@ -70,7 +70,10 @@ tienda.factory("global",
 
     // in not session
     obj.productos = [];
+    obj.productosTienda = [];
     obj.camisetas = [];
+    obj.gorras=[];
+    obj.cases=[];
 
 
     // in session
@@ -120,12 +123,47 @@ tienda.factory("global",
 
     obj.getCamisetas = function()
     {
-
-      if(obj.productos.length > 0)
+      $http.get('/find/productos/playeras').success(function(data) {
+            return data;
+        }).error(function(data){
+          //TODO:Error
+          });
         $rootScope.$broadcast("getCamisetas");
 
-           }
+    }
 
+    obj.getProductosTienda = function()
+    {
+      $http.get('/find/productos').success(function(data) {
+            return data;
+        }).error(function(data){
+          //TODO:Error
+          });
+        $rootScope.$broadcast("getProductosTienda");
+
+    }
+
+    obj.getGorras = function()
+    {
+      $http.get('/find/productos/gorras').success(function(data) {
+            return data;
+        }).error(function(data){
+          //TODO:Error
+          });
+        $rootScope.$broadcast("getGorras");
+
+    }
+
+    obj.getCases = function()
+    {
+      $http.get('/find/productos/cases').success(function(data) {
+            return data;
+        }).error(function(data){
+          //TODO:Error
+          });
+        $rootScope.$broadcast("getCases");
+
+    }
     obj.getProductos = function()
     {
 
@@ -177,14 +215,17 @@ function main($scope, global, $http)
 {
   console.log("main");
 
+
   $scope.entradas = global.entradas;
   $scope.cartProducts =[];
   $scope.idUsuario;
   $scope.totalCarro = 0.0;
+  $scope.productos =[];
 
   $scope.init = function(idUsuario){
     $scope.idUsuario = idUsuario;
     $scope.getProductosCarritos();
+    $scope.getProductosTienda();
   };
 
   $scope.$on("addToCar",
@@ -195,37 +236,81 @@ function main($scope, global, $http)
   );
 
   $scope.getProductosCarritos = function(){
-    $http.get('/find/cart/'+$scope.idUsuario).success(function(data) {
-          var newProducts = [];
-          data.productos.forEach(function(productoFormal) {
-              var filteredProduct = {};
-              filteredProduct.productName = productoFormal.productName;
-              filteredProduct.price = productoFormal.productPrice;
-              filteredProduct.cantidad = 0;
-              filteredProduct.talla = productoFormal.talla;
-              data.productos.forEach(function(productArray){
-                if((productoFormal.productName === productArray.productName) && (productoFormal.talla === productArray.talla)){
-                  filteredProduct.cantidad +=1;
-                }
-              });
-              filteredProduct.total = filteredProduct.cantidad * filteredProduct.price;
-              if(newProducts.length <=0){
-                newProducts.push(filteredProduct);
-              } else {
-                if(
-                  newProducts.filter(function(product){return (product.productName === filteredProduct.productName) && (product.talla === filteredProduct.talla)
-                }).length <=0){
+    if($scope.idUsuario!=="")
+      $http.get('/find/cart/'+$scope.idUsuario).success(function(data) {
+            var newProducts = [];
+            $scope.totalCarro = 0.0;
+            if(data!=[]){
+            data.productos.forEach(function(productoFormal) {
+                var filteredProduct = {};
+                filteredProduct.productName = productoFormal.productName;
+                filteredProduct.price = productoFormal.productPrice;
+                filteredProduct.cantidad = 0;
+                filteredProduct.talla = productoFormal.talla;
+                filteredProduct.idProducto = productoFormal._id;
+                data.productos.forEach(function(productArray){
+                  if((productoFormal.productName === productArray.productName) && (productoFormal.talla === productArray.talla)){
+                    filteredProduct.cantidad +=1;
+                  }
+                });
+                filteredProduct.total = filteredProduct.cantidad * filteredProduct.price;
+                if(newProducts.length <=0){
                   newProducts.push(filteredProduct);
-                };
-              }
-              $scope.totalCarro +=productoFormal.productPrice;
+                } else {
+                  if(
+                    newProducts.filter(function(product){return (product.productName === filteredProduct.productName) && (product.talla === filteredProduct.talla)
+                  }).length <=0){
+                    newProducts.push(filteredProduct);
+                  };
+                }
+                $scope.totalCarro +=productoFormal.productPrice;
+            });
+            $scope.cartProducts = newProducts;
+            }
+        }).error(function(data){
+          //TODO:Error
           });
-          $scope.cartProducts = newProducts;
-      }).error(function(data){
-        //TODO:Error
-        });
   }
+
+  $scope.getProductosTienda = function(){
+      $http.get('/find/productos/playeras').success(function(data) {
+            $scope.productos = data;
+        }).error(function(data){
+          //TODO:Error
+          });
+  }
+
+  $scope.agregarObjeto = function(id){
+    $http({
+      url:'/agregarObjeto',
+      method:'POST',
+      data: {idUsuario: $scope.idUsuario,
+      idProducto:id}
+    }).then(function(data){
+      $scope.getProductosCarritos();
+    }, function(data){
+      //TODO:Error
+    });
+
+  }
+
+  $scope.removerObjeto = function(id){
+  $http({
+      url:'/removerObjeto',
+      method:'POST',
+      data: {idUsuario: $scope.idUsuario,
+      idProducto:id}
+    }).then(function(data){
+      $scope.getProductosCarritos();
+    }, function(data){
+      //TODO:Error
+    });
+
+  }
+
+
 }
+
 
 
 function car($scope, global)
@@ -269,7 +354,6 @@ function detalle ($scope, $routeParams, $location, global)
 function home($scope, $http, global)
 {
   console.log("home");
-
   $scope.$on("getProductos",
     function()
     {
@@ -282,16 +366,55 @@ function home($scope, $http, global)
   $scope.$on("getCamisetas",
     function()
     {
-      $scope.camisetas = global.camisetas;
+      $http.get('/find/productos/playeras').success(function(data) {
+            $scope.camisetas = data;
+        }).error(function(data){
+          //TODO:Error
+          });
     }
   );
 
-  $scope.productos = [];
+  $scope.$on("getGorras",
+    function()
+    {
+      $http.get('/find/productos/gorras').success(function(data) {
+            $scope.gorras = data;
+        }).error(function(data){
+          //TODO:Error
+          });
+    }
+  );
+
+  $scope.$on("getCases",
+    function()
+    {
+      $http.get('/find/productos/cases').success(function(data) {
+            $scope.cases = data;
+        }).error(function(data){
+          //TODO:Error
+          });
+    }
+  );
+
+  $scope.$on("getProductosTienda",function()
+  {
+    $http.get('/find/productos').success(function(data) {
+          $scope.productosTienda = data;
+      }).error(function(data){
+        //TODO:Error
+        });
+  }
+  );
+  $scope.gorras = [];
   $scope.camisetas = [];
+  $scope.cases=[];
+  $scope.productosTienda=[];
 
 
-  global.getProductos();
+  global.getGorras();
+  global.getCases();
   global.getCamisetas();
+  global.getProductosTienda();
 
 
 }
