@@ -215,6 +215,7 @@ function main($scope, global, $http)
 {
   console.log("main");
 
+
   $scope.entradas = global.entradas;
   $scope.cartProducts =[];
   $scope.idUsuario;
@@ -247,7 +248,6 @@ function main($scope, global, $http)
                 filteredProduct.cantidad = 0;
                 filteredProduct.talla = productoFormal.talla;
                 filteredProduct.idProducto = productoFormal._id;
-                console.log("idProducto ->" + filteredProduct.idProducto);
                 data.productos.forEach(function(productArray){
                   if((productoFormal.productName === productArray.productName) && (productoFormal.talla === productArray.talla)){
                     filteredProduct.cantidad +=1;
@@ -295,17 +295,13 @@ function main($scope, global, $http)
   }
 
   $scope.removerObjeto = function(id){
-    console.log("algo")
-    console.log($scope.idUsuario);
-    $http({
+  $http({
       url:'/removerObjeto',
       method:'POST',
       data: {idUsuario: $scope.idUsuario,
       idProducto:id}
     }).then(function(data){
-      console.log("Finalize este pedo")
       $scope.getProductosCarritos();
-      console.log("AAAAAAQQQQ");
     }, function(data){
       //TODO:Error
     });

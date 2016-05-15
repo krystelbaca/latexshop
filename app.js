@@ -104,20 +104,13 @@ app.post("/removerObjeto", function (req, response) {
 	ShippingCar.findOne({"usuario": mongoose.Types.ObjectId(req.body.idUsuario)})
 			.exec(function (err, obj) {
 				if(obj.productos){
-					console.log(req.body.idProducto);
-					console.log("---------1");
 					for(var i = 0; i<obj.productos.length; i++){
-						console.log(obj.productos[i]._id);
-						console.log(obj.productos[i]._id == req.body.idProducto);
 						if(obj.productos[i]._id == req.body.idProducto){
-							console.log("Termine este pedo");
 							obj.productos.splice(i,1);
 							break;
 						}
 					}
 				}
-				console.log(obj.productos);
-				console.log("---------2");
 				obj.save(function (err, user) {
                 if (err) {
                 } else {
@@ -126,21 +119,7 @@ app.post("/removerObjeto", function (req, response) {
             }
         );
 			});
-	//var producto = Producto.findOne({_id:req.body.idProducto})
-		//	.exec(function (err, obj) {
-			//	console.log(obj[0]);
-			//	var id = obj[0]._id;
-			//	console.log(id);
-				//obj[0]._id = mongoose.Types.ObjectId(id+"");
-			//	console.log(obj[0]._id);
-				//ShippingCar.update({"usuario": req.body.idUsuario}, { $pull: {"productos": [obj[0]]} }, function (err) {
-					//	if (err) {
-						//		console.log(err);
-						//}
-					//	return response.send("Algo");
-				//});
-		//});
-});
+	});
 
 app.listen(port, function(){
 	console.log("Escuchando en el puerto " + port);
